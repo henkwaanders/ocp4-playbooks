@@ -52,6 +52,11 @@
     oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"emptyDir":{}}, "managementState": "Managed"}}'
   when: storage_type != "nfs"
 
+- name: Create the default route for the image registry
+  tags: image-registry
+  shell: |
+    oc patch configs.imageregistry.operator.openshift.io/cluster --patch '{"spec":{"defaultRoute":true}}' --type=merge
+  
 - name: Force install kubeconfig again
   copy:
     src: "{{ workdir }}/auth/kubeconfig"
