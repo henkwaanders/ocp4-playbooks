@@ -1,5 +1,5 @@
 ---
-install-config:
+install_config:
   cluster_domain: example.com
   cluster_id: test
   pull_secret: {json goes here}
@@ -10,8 +10,21 @@ storage_type: nfs
 log_level: info
 release_image_override: ""
 
+node_connection_timeout: 2700
+
 rhcos_kernel_options: []
+
+setup_squid_proxy: false
 
 proxy_url: ""
 no_proxy: ""
 
+enable_local_registry: false
+
+chronyconfig:
+   enabled: false
+   content:
+     - server: ntp1.example.com
+       options: iburst
+     - server: ntp2.example.com
+       options: iburst
