@@ -81,3 +81,46 @@
   shell: "./create_admin_user.sh"
   args:
     chdir: "{{ workdir }}"
+
+- name: Post install script
+  tags: post
+  template:
+    src: "templates/ocp_install_scripts_post_install.j2"
+    dest: "{{ workdir }}/ocp_install_scripts_post_install.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Execute postinstall script
+  tags: post
+  shell: "./ocp_install_scripts_post_install.sh"
+  args:
+    chdir: "{{ workdir }}"
+
+- name Prepare for DB2 NFS-storage SELinux policy
+  tags: sel-pol
+  block:
+  - name: Copy policy file and apply shell script
+    copy:
+      src: "{{ item }}"
+      dest: "{{ workdir }}"
+      owner: root
+      group: root
+      mode: 0755
+    with_fileglob:
+      - "templates/db2u-nfs.te"
+      - "templates/db2_selinux_w.sh"
+
+  - name: Copy the db2_selinux_prep script to the {{ workdir }} folder
+    template:
+      src: "templates/db2_selinux_prep.j2"
+      dest: "{{ workdir }}/db2_selinux_prep.sh"
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Create the policy and apply on the worker nodes
+    shell: "./db2_selinux_prep.sh"
+    args:
+      chdir: "{{ workdir }}"
+  when: storage_type == "nfs"
