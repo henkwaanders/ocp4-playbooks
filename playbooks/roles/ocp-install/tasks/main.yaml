@@ -97,7 +97,7 @@
   args:
     chdir: "{{ workdir }}"
 
-- name Prepare for DB2 NFS-storage SELinux policy
+- name: Prepare for DB2 NFS-storage SELinux policy
   tags: sel-pol
   block:
   - name: Copy policy file and apply shell script
