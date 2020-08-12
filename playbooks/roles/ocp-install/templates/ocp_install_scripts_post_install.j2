@@ -1,0 +1,12 @@
+export KUBECONFIG={{workdir}}/auth/kubeconfig
+
+echo "Removing kubeadmin user"
+oc delete secrets kubeadmin -n kube-system
+
+echo "Rebuilding ~/.ssh/known_hosts to allow password-less ssh"
+rm -f ~/.ssh/known_hosts
+{% for host in groups['masters'] | union(groups['workers']) | sort %}
+    ssh-keyscan -t rsa {{host}} >> ~/.ssh/known_hosts 2> /dev/null
+    ssh-keyscan -t rsa {{hostvars[host]['host']}}.{{cluster_id}}.{{cluster_domain}} >> ~/.ssh/known_hosts 2> /dev/null
+    ssh-keyscan -t rsa {{hostvars[host]['host']}} >> ~/.ssh/known_hosts 2> /dev/null
+{% endfor %}
