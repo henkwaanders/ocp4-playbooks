@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# # (Mandatory) Before installing either Db2 OLTP or Db2 Warehouse set the correct Selinux persmissions
+# Script to be executed on the bastion node
+
+checkmodule -M -m -o db2u-nfs.mod db2u-nfs.te
+semodule_package -o db2u-nfs.pp -m db2u-nfs.mod
+
+{% for host in groups['workers'] | sort %}
+echo {{host}}
+scp db2u-nfs.pp core@{{host}}:~
+scp db2_selinux_w.sh core@{{host}}:~
+ssh core@{{host}} '~/db2_selinux_w.sh'
+echo
+#
+{% endfor %}
