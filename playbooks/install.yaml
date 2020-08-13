@@ -40,3 +40,10 @@
   hosts: bastion
   roles:
   - ocp-customization
+
+- name: Shutdown bootstrap
+  hosts: bootstrap
+  tasks:
+  - name: Shutdown the bootstrap node
+    shell: "shutdown -h now"
+
